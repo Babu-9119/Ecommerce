@@ -19,9 +19,12 @@ exports.create = (req,res) => {
         description:req.body.description
     }
 
-    Categoru.create(category).then(category =>{
-        console.log(`Category name: [${category.name} inserted into database] `)
-    }).catch(err =>{
+    Category.create(category)
+    .then(category =>{
+        console.log(`Category name: [${category.name} inserted into database] `);
+        res.status(201).send(category);
+    })
+    .catch(err =>{
         console.log(`Issue in iserting category name: [${category.name}]`);
         console.log(`error message:[${err.message}]`);
         res.status(500).send({
@@ -68,6 +71,11 @@ exports.findOne = (req,res) => {
     const categoryId = req.params.id;
     Category.findByPk(categoryId)
     .then(category => {
+        if(!category){
+            return res.status(400).send({
+                message:"category not found"
+            })
+        }
         res.status(200).send(category);
     })
     .catch(err => {
@@ -95,8 +103,13 @@ exports.update = (req,res) => {
         where:{id:categoryId}
     })
     .then(updatedCategory =>{
-        category.findByPk(categoryId)
+        Category.findByPk(categoryId)
         .then(category => {
+            if(!category){
+                return res.status(404).send({
+                    message:"category not found"
+                })
+            }
             res.status(200).send(category)
         })
         .catch(err => {
@@ -110,5 +123,28 @@ exports.update = (req,res) => {
             message:"some internal error while updating ths category based on id"
         })
     })
+
+}
+
+exports.delete = (req,res) => {
+    let categoryId = req.params.id;
+
+    Category.destroy( {
+        where:{id:categoryId}
+    })
+    .then( () => {
+        res.status(200).send({
+
+            message:"deleted category"
+        }
+            
+        );
+    })
+    .catch(err => {
+        res.status(500).send({
+            message:"error while deleting the category"
+        })
+    })
+
 
 }

@@ -12,7 +12,7 @@ module.exports = (sequelize,Sequelize) => {
             type:Sequelize.STRING,
             allowNull:false
         },
-        decription: {
+        description: {
             type:Sequelize.STRING
         }
     });
