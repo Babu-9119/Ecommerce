@@ -6,17 +6,11 @@ const Category = db.category;
  * to create and save the new categories
  */
 exports.create = (req,res) => {
-    if(!req.body.name){
-        res.status(400).send({
-            message:"Name of the category should nor be empty !"
-        })
-        return;
-    }
-
-
+    
     const category = {
         name: req.body.name,
-        description:req.body.description
+        description:req.body.description,
+        categoryId:req.body.categoryId
     }
 
     Category.create(category)
@@ -132,7 +126,13 @@ exports.delete = (req,res) => {
     Category.destroy( {
         where:{id:categoryId}
     })
-    .then( () => {
+    .then( category => {
+        if(!category){
+            res.status(400).send({
+                message:`category nor found to delete with cateogoryId [${categoryId}]`
+            })
+            return;
+        }
         res.status(200).send({
 
             message:"deleted category"

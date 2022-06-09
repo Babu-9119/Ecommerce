@@ -1,22 +1,19 @@
 const db = require('../models');
 
 const Product = db.product;
+const Op = db.Sequelize.Op;
 
 /**
  * to insert data into a database
  */
 exports.create = (req, res) =>{
-    if(!req.body.name){
-        res.status(400).send({
-            message:"Name of the category should not be empty!"
-        })
-        return;
-    }
+    
 
     const product = {
         name:req.body.name,
         description:req.body.description,
-        cost:req.body.cost
+        cost:req.body.cost,
+        categoryId:req.body.categoryId
     }
 
     Product.create(product)
@@ -38,14 +35,57 @@ exports.create = (req, res) =>{
  */
 
 exports.findAll = (req,res) => {
-    let categoryName = req.query.name;
+    let productName = req.query.name;
+    let minCost = req.query.minCost;
+    let maxCost = req.query.maxCost;
     let promise;
-    if(categoryName){
+    if(productName && minCost && maxCost){
         promise = Product.findAll({
-            where:{name:categoryName}
+            where:{
+                [Op.and]:{
+                    name:productName,
+                    cost:{
+                        [Op.gte]:minCost,
+                        [Op.lte]:maxCost
+                    }
+                }
+            }
         })
 
-    }else{
+    }else if(productName){
+        promise = Product.findAll({
+            where:{
+                name:productName
+            }
+        })
+    }
+    else if(minCost && maxCost){
+        promise = Product.findAll({
+            where:{
+                cost:{
+                    [Op.gte]:minCost,
+                    [Op.lte]:maxCost
+                }
+            }
+        })
+    }else if(maxCost){
+        promise = Product.findAll({
+            where:{
+                cost:{
+                    [Op.lte]:maxCost
+                }
+            }
+        })
+    }else if(minCost){
+        promise = Product.findAll({
+            where:{
+                cost:{
+                    [Op.gte]:minCost
+                }
+            }
+        })
+    }
+    else{
         promise = Product.findAll();
     }
 
@@ -89,10 +129,12 @@ exports.findOne = (req,res) => {
 
  exports.update = (req,res) => {
 
+
     const product = {
-        name:req.body.name,
-        description:req.body.description,
-        cost:req.body.cost
+        name : req.body.name,
+        description : req.body.description,
+        cost : req.body.cost,
+        categoryId : req.body.categoryId
     }
 
     let productId = req.params.id;

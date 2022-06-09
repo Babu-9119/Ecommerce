@@ -10,6 +10,8 @@ const db = require("./models");
 const Category = db.category;
 const Product = db.product;
 
+Category.hasMany(Product);
+
 db.sequelize.sync({force:true})
 .then(() => {
     console.log("tables are dropped and created");
