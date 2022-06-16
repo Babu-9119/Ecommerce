@@ -9,6 +9,7 @@ app.use(bodyParser.json());
 const db = require("./models");
 const Category = db.category;
 const Product = db.product;
+const Roles = db.role;
 
 Category.hasMany(Product);
 
@@ -39,18 +40,33 @@ function initc(){
     .catch( err => {
         console.log("error while initialising category table")
     })
+    /**
+     * adding roles
+     */
+    Roles.create({
+        id:1,
+        name : "user"
+    })
+    Roles.create({
+        id:2,
+        name : "admin"
+    })
+
+
 }
 
 function initp(){
     var products = [{
         name:"mobile",
         description:"Mi note 6 pro",
-        cost:13999
+        cost:13999,
+        categoryId:1
     },
     {
         name:"headset",
         description:"Boat 330 pro",
-        cost:1599
+        cost:1599,
+        categoryId:2
     }];
 
     Product.bulkCreate(products)
@@ -65,6 +81,9 @@ function initp(){
 
 require('./routes/category.routes')(app);
 require('./routes/product.routes')(app);
+require('./routes/auth.routes')(app);
+
+
 app.listen(serverConfig.PORT, () =>{
     console.log(`server started on PORT: ${serverConfig.PORT}`)
 });

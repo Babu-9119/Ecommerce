@@ -1,5 +1,10 @@
-const requestValidator = require('./requestValidator')
+const requestValidator = require('./requestValidator');
+const verifySignUp = require('./verifySignUp');
+const authjwt = require('./authjwt')
 
 module.exports = {
-    requestValidator
+    requestValidator,
+    verifySignUp,
+    authjwt
+
 }
